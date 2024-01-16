@@ -1,7 +1,7 @@
 const fs = require("fs").promises;
 const path = require("path");
 
-async function readFolderStructure(folder) {
+async function readFolderStructure(folder, depth = 0) {
   try {
     const folderNames = await fs.readdir(folder);
 
@@ -10,10 +10,16 @@ async function readFolderStructure(folder) {
       const stats = await fs.lstat(filePath);
 
       if (stats.isFile()) {
-        await fs.appendFile("./output.txt", `FILE: ${file}\n`);
+        await fs.appendFile(
+          "./output.txt",
+          `${"  ".repeat(depth)}FILE: ${file}\n`
+        );
       } else {
-        await fs.appendFile("./output.txt", `DIR: ${file}\n`);
-        await readFolderStructure(filePath);
+        await fs.appendFile(
+          "./output.txt",
+          `${"  ".repeat(depth)}DIR: ${file}\n`
+        );
+        await readFolderStructure(filePath, depth + 1);
       }
     }
   } catch (error) {
